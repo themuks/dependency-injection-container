@@ -1,34 +1,35 @@
-using DependencyInjectionContainer;
-using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DependencyInjectionContainer;
+using NUnit.Framework;
 
 namespace DIContainerTests
 {
-
     public struct NotReferenceType
     {
-        int a;
+        private int a;
     }
 
     public static class StaticClass
     {
-        static int f;
+        private static int f;
     }
 
     public abstract class AbsractClass
     {
-        static int c;
+        private static int c;
     }
 
-    public interface ISingleDependency { }
-
-    public class SingleDependency : ISingleDependency 
+    public interface ISingleDependency
     {
-        int a = 0;
-        char b = 'a';
+    }
+
+    public class SingleDependency : ISingleDependency
+    {
+        private readonly int a = 0;
+        private readonly char b = 'a';
+
         public override bool Equals(object obj)
         {
             if (obj is SingleDependency sd)
@@ -38,17 +39,18 @@ namespace DIContainerTests
 
         public override int GetHashCode()
         {
-            int hash = 17;
+            var hash = 17;
             hash = hash * 23 + a.GetHashCode();
             hash = hash * 23 + b.GetHashCode();
             return hash;
         }
-
     }
+
     public class ClassWithInnerDependency : ISingleDependency
     {
-        int a = 0;
-        IInnerDependency d;
+        private readonly int a = 0;
+        private readonly IInnerDependency d;
+
         public ClassWithInnerDependency(IInnerDependency dependency)
         {
             d = dependency;
@@ -63,19 +65,21 @@ namespace DIContainerTests
 
         public override int GetHashCode()
         {
-            int hash = 17;
+            var hash = 17;
             hash = hash * 23 + a.GetHashCode();
             hash = hash * 23 + d.GetHashCode();
             return hash;
         }
-
     }
-    public interface IInnerDependency { }
+
+    public interface IInnerDependency
+    {
+    }
+
     public class InnerDependencyClass : IInnerDependency
     {
-        int a = 5;
-        int b = 2;
-        public InnerDependencyClass() { }
+        private readonly int a = 5;
+        private readonly int b = 2;
 
         public override bool Equals(object obj)
         {
@@ -86,29 +90,35 @@ namespace DIContainerTests
 
         public override int GetHashCode()
         {
-            int hash = 17;
+            var hash = 17;
             hash = hash * 23 + a.GetHashCode();
             hash = hash * 23 + b.GetHashCode();
             return hash;
         }
     }
 
-    public interface ISingleton { }
+    public interface ISingleton
+    {
+    }
+
     public class SingletonClass : ISingleton
     {
-        public int a { get; }
-
         public SingletonClass(int value)
         {
             a = value;
         }
+
+        public int a { get; }
     }
 
-    public interface ICollectionClass { }
-    public class CollectionClass1 : ICollectionClass 
+    public interface ICollectionClass
     {
-        int a = 0;
-        char b = 'a';
+    }
+
+    public class CollectionClass1 : ICollectionClass
+    {
+        private readonly int a = 0;
+        private readonly char b = 'a';
 
         public override bool Equals(object obj)
         {
@@ -119,16 +129,17 @@ namespace DIContainerTests
 
         public override int GetHashCode()
         {
-            int hash = 17;
+            var hash = 17;
             hash = hash * 23 + a.GetHashCode();
             hash = hash * 23 + b.GetHashCode();
             return hash;
         }
     }
+
     public class CollectionClass2 : ICollectionClass
     {
-        char a = 'b';
-        int b = 1;
+        private readonly char a = 'b';
+        private readonly int b = 1;
 
         public override bool Equals(object obj)
         {
@@ -139,16 +150,17 @@ namespace DIContainerTests
 
         public override int GetHashCode()
         {
-            int hash = 17;
+            var hash = 17;
             hash = hash * 23 + a.GetHashCode();
             hash = hash * 23 + b.GetHashCode();
             return hash;
         }
     }
+
     public class CollectionClass3 : ICollectionClass
     {
-        int a=3;
-        int b=4;
+        private readonly int a = 3;
+        private readonly int b = 4;
 
         public override bool Equals(object obj)
         {
@@ -159,16 +171,17 @@ namespace DIContainerTests
 
         public override int GetHashCode()
         {
-            int hash = 17;
+            var hash = 17;
             hash = hash * 23 + a.GetHashCode();
             hash = hash * 23 + b.GetHashCode();
             return hash;
         }
     }
+
     public class CollectionClass4 : ICollectionClass
     {
-        char a = 'z';
-        char b = 'x';
+        private readonly char a = 'z';
+        private readonly char b = 'x';
 
         public override bool Equals(object obj)
         {
@@ -179,17 +192,20 @@ namespace DIContainerTests
 
         public override int GetHashCode()
         {
-            int hash = 17;
+            var hash = 17;
             hash = hash * 23 + a.GetHashCode();
             hash = hash * 23 + b.GetHashCode();
             return hash;
         }
     }
 
-    public interface ICollectionCtor { }
+    public interface ICollectionCtor
+    {
+    }
+
     public class CollectionCtor : ICollectionCtor
     {
-        IEnumerable<ICollectionClass> collection;
+        private readonly IEnumerable<ICollectionClass> collection;
 
         public CollectionCtor(IEnumerable<ICollectionClass> collection)
         {
@@ -198,10 +214,7 @@ namespace DIContainerTests
 
         public override bool Equals(object obj)
         {
-            if (obj is CollectionCtor c)
-            {
-                return Enumerable.SequenceEqual(c.collection, collection);
-            }         
+            if (obj is CollectionCtor c) return c.collection.SequenceEqual(collection);
             return false;
         }
 
@@ -209,21 +222,20 @@ namespace DIContainerTests
         {
             return collection.GetHashCode();
         }
-
     }
 
 
-    public interface IConstrained { }
+    public interface IConstrained
+    {
+    }
 
     public class ConstrainedClass : IConstrained
     {
-        int a = 5;
+        private readonly int a = 5;
+
         public override bool Equals(object obj)
         {
-            if (obj is ConstrainedClass c)
-            {
-                return c.a == a;
-            }
+            if (obj is ConstrainedClass c) return c.a == a;
             return false;
         }
 
@@ -235,13 +247,11 @@ namespace DIContainerTests
 
     public class ConstrainedClass2 : IConstrained
     {
-        int a = 3;
+        private readonly int a = 3;
+
         public override bool Equals(object obj)
         {
-            if (obj is ConstrainedClass2 c)
-            {
-                return c.a == a;
-            }
+            if (obj is ConstrainedClass2 c) return c.a == a;
             return false;
         }
 
@@ -251,12 +261,15 @@ namespace DIContainerTests
         }
     }
 
-    public interface IGenericConstrained<TConstrainedClass> where TConstrainedClass : IConstrained { }
-
-    class GenericConstrainedClass<TConstrainedClass> : IGenericConstrained<TConstrainedClass>
-                                           where TConstrainedClass : IConstrained
+    public interface IGenericConstrained<TConstrainedClass> where TConstrainedClass : IConstrained
     {
-        TConstrainedClass cls;
+    }
+
+    internal class GenericConstrainedClass<TConstrainedClass> : IGenericConstrained<TConstrainedClass>
+        where TConstrainedClass : IConstrained
+    {
+        private TConstrainedClass cls;
+
         public GenericConstrainedClass(TConstrainedClass @class)
         {
             cls = @class;
@@ -264,10 +277,7 @@ namespace DIContainerTests
 
         public override bool Equals(object obj)
         {
-            if (obj is GenericConstrainedClass<TConstrainedClass> c)
-            {
-                return c.cls.Equals(cls);
-            }
+            if (obj is GenericConstrainedClass<TConstrainedClass> c) return c.cls.Equals(cls);
             return false;
         }
 
@@ -277,17 +287,17 @@ namespace DIContainerTests
         }
     }
 
-    public interface IOpenConstrained { }
+    public interface IOpenConstrained
+    {
+    }
 
     public class OpenConstrainedClass : IOpenConstrained
     {
-        int a = 5;
+        private readonly int a = 5;
+
         public override bool Equals(object obj)
         {
-            if (obj is OpenConstrainedClass c)
-            {
-                return c.a == a;
-            }
+            if (obj is OpenConstrainedClass c) return c.a == a;
             return false;
         }
 
@@ -299,13 +309,11 @@ namespace DIContainerTests
 
     public class OpenConstrainedClass2 : IOpenConstrained
     {
-        int a = 3;
+        private readonly int a = 3;
+
         public override bool Equals(object obj)
         {
-            if (obj is OpenConstrainedClass2 c)
-            {
-                return c.a == a;
-            }
+            if (obj is OpenConstrainedClass2 c) return c.a == a;
             return false;
         }
 
@@ -315,12 +323,15 @@ namespace DIContainerTests
         }
     }
 
-    public interface IOpenGenericConstrained<TOpenConstrainedClass> where TOpenConstrainedClass : IOpenConstrained { }
-
-    class OpenGenericConstrainedClass<TOpenConstrainedClass> : IOpenGenericConstrained<TOpenConstrainedClass>
-                                           where TOpenConstrainedClass : IOpenConstrained
+    public interface IOpenGenericConstrained<TOpenConstrainedClass> where TOpenConstrainedClass : IOpenConstrained
     {
-        TOpenConstrainedClass cls;
+    }
+
+    internal class OpenGenericConstrainedClass<TOpenConstrainedClass> : IOpenGenericConstrained<TOpenConstrainedClass>
+        where TOpenConstrainedClass : IOpenConstrained
+    {
+        private TOpenConstrainedClass cls;
+
         public OpenGenericConstrainedClass(TOpenConstrainedClass @class)
         {
             cls = @class;
@@ -328,10 +339,7 @@ namespace DIContainerTests
 
         public override bool Equals(object obj)
         {
-            if (obj is OpenGenericConstrainedClass<TOpenConstrainedClass> c)
-            {
-                return c.cls.Equals(cls);
-            }
+            if (obj is OpenGenericConstrainedClass<TOpenConstrainedClass> c) return c.cls.Equals(cls);
             return false;
         }
 
@@ -340,22 +348,27 @@ namespace DIContainerTests
             return cls.GetHashCode();
         }
     }
-    public enum NamedDependency { First, Second, Third };
+
+    public enum NamedDependency
+    {
+        First,
+        Second,
+        Third
+    }
 
     public class AnotherSimpleClass : ISingleDependency
     {
-        ISingleDependency dependency;
-        public AnotherSimpleClass([DependencyKey(NamedDependency.Second)] ISingleDependency dep)
+        private readonly ISingleDependency dependency;
+
+        public AnotherSimpleClass([DependencyKey(NamedDependency.Second)]
+            ISingleDependency dep)
         {
-            this.dependency = dep;
+            dependency = dep;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is AnotherSimpleClass c)
-            {
-                return c.dependency.Equals(dependency);
-            }
+            if (obj is AnotherSimpleClass c) return c.dependency.Equals(dependency);
             return false;
         }
 
@@ -367,8 +380,8 @@ namespace DIContainerTests
 
     public class Tests
     {
-        DependenciesConfigurator dependencies;
-        DependencyProvider provider;
+        private DependenciesConfigurator dependencies;
+        private DependencyProvider provider;
 
         [SetUp]
         public void Setup()
@@ -403,12 +416,10 @@ namespace DIContainerTests
             Assert.AreEqual(expected, actual);
         }
 
-        
 
         [Test]
         public void ClassWithInnerDependencyTest()
         {
-
             var actual = provider.Resolve<ISingleDependency>(NamedDependency.Second);
             var expected = new ClassWithInnerDependency(new InnerDependencyClass());
 
@@ -418,7 +429,6 @@ namespace DIContainerTests
         [Test]
         public void SingletonTest()
         {
-
             var actual = Task.Run(() => provider.Resolve<ISingleton>());
             var expected1 = Task.Run(() => provider.Resolve<ISingleton>());
             var expected2 = Task.Run(() => provider.Resolve<ISingleton>());
@@ -431,14 +441,14 @@ namespace DIContainerTests
             Assert.AreEqual(expected3.Result, actual.Result);
             Assert.AreEqual(expected4.Result, actual.Result);
             Assert.AreEqual(expected5.Result, actual.Result);
-
         }
 
         [Test]
         public void CollectionTest()
         {
             var actual = provider.Resolve<IEnumerable<ICollectionClass>>();
-            var expected = new ICollectionClass[] { new CollectionClass1(), new CollectionClass2(), new CollectionClass3(), new CollectionClass4() };
+            var expected = new ICollectionClass[]
+                {new CollectionClass1(), new CollectionClass2(), new CollectionClass3(), new CollectionClass4()};
 
             CollectionAssert.AreEqual(expected, actual);
         }
@@ -447,7 +457,8 @@ namespace DIContainerTests
         public void CollectionCtorTest()
         {
             var actual = provider.Resolve<ICollectionCtor>();
-            var expected = new CollectionCtor(new ICollectionClass[] { new CollectionClass1(), new CollectionClass2(), new CollectionClass3(), new CollectionClass4() });
+            var expected = new CollectionCtor(new ICollectionClass[]
+                {new CollectionClass1(), new CollectionClass2(), new CollectionClass3(), new CollectionClass4()});
 
             Assert.AreEqual(expected, actual);
         }
@@ -482,13 +493,11 @@ namespace DIContainerTests
 
         [Test]
         public void DependencyKeyTest()
-        {           
+        {
             var actual = provider.Resolve<ISingleDependency>(NamedDependency.Third);
             var expected = new AnotherSimpleClass(new ClassWithInnerDependency(new InnerDependencyClass()));
 
             Assert.AreEqual(expected, actual);
         }
-
     }
-   
 }

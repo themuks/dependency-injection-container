@@ -7,8 +7,14 @@ namespace DependencyInjectionContainer
 {
     public class DependenciesConfigurator
     {
-        public enum Lifetime { Instance, Singleton };
-        internal Dictionary<Type, List<ImplementationConfiguration>> RegisteredConfigurations { get; } = new Dictionary<Type, List<ImplementationConfiguration>>();
+        public enum Lifetime
+        {
+            Instance,
+            Singleton
+        }
+
+        internal Dictionary<Type, List<ImplementationConfiguration>> RegisteredConfigurations { get; } =
+            new Dictionary<Type, List<ImplementationConfiguration>>();
 
         private bool HasPublicCtor(Type tImplementation)
         {
@@ -27,14 +33,15 @@ namespace DependencyInjectionContainer
             if (!RegisteredConfigurations.ContainsKey(tDependency))
                 RegisteredConfigurations.Add(tDependency, new List<ImplementationConfiguration>());
 
-            if (RegisteredConfigurations[tDependency].Contains(new ImplementationConfiguration(tImplementation, lifetime)))
+            if (RegisteredConfigurations[tDependency]
+                .Contains(new ImplementationConfiguration(tImplementation, lifetime)))
                 throw new ArgumentException("Such dependency is already registered");
-            else
-                RegisteredConfigurations[tDependency].Add(new ImplementationConfiguration(tImplementation, lifetime));            
+            RegisteredConfigurations[tDependency].Add(new ImplementationConfiguration(tImplementation, lifetime));
         }
 
-        public void Register<TDependency, TImplementation>(Lifetime lifetime = Lifetime.Instance) where TDependency : class
-                                                                                                  where TImplementation : TDependency
+        public void Register<TDependency, TImplementation>(Lifetime lifetime = Lifetime.Instance)
+            where TDependency : class
+            where TImplementation : TDependency
         {
             Register(typeof(TDependency), typeof(TImplementation), lifetime);
         }
